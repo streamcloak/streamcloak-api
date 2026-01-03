@@ -1,0 +1,35 @@
+# --- Python General ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Virtual Environment (uv managed) ---
+.venv/
+venv/
+ENV/
+
+# --- Environment Variables & Secrets ---
+.env
+.env.*
+!.env.example
+*.key
+*.crt
+*.csr
+*.pem
+*.ovpn
+auth.txt
+
+# --- PyCharm / IDEs ---
+.idea/
+.vscode/
+*.swp
+
+# --- Testing & Code Quality ---
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# --- Logs ---
+*.log
