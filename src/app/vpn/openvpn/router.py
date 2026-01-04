@@ -12,7 +12,7 @@ def get_vpn_service():
 
 
 @router.get("/status", response_model=VPNStatusResponse)
-async def get_vpn_status(service: OpenVPNService = Depends(get_vpn_service)):
+async def get_vpn_status(service: OpenVPNService = Depends(get_vpn_service)):  # noqa: B008
     """
     Get current OpenVPN connection status and remote server address.
     """
@@ -20,7 +20,7 @@ async def get_vpn_status(service: OpenVPNService = Depends(get_vpn_service)):
 
 
 @router.post("/stop", response_model=VPNSystemResponse)
-async def stop_vpn_server(service: OpenVPNService = Depends(get_vpn_service)):
+async def stop_vpn_server(service: OpenVPNService = Depends(get_vpn_service)):  # noqa: B008
     """
     Stop the current OpenVPN connection.
     """
@@ -28,7 +28,7 @@ async def stop_vpn_server(service: OpenVPNService = Depends(get_vpn_service)):
 
 
 @router.post("/start", response_model=VPNSystemResponse)
-async def start_vpn_server(service: OpenVPNService = Depends(get_vpn_service)):
+async def start_vpn_server(service: OpenVPNService = Depends(get_vpn_service)):  # noqa: B008
     """
     Start a new OpenVPN connection.
     """
@@ -36,7 +36,7 @@ async def start_vpn_server(service: OpenVPNService = Depends(get_vpn_service)):
 
 
 @router.post("/restart", response_model=VPNSystemResponse)
-async def restart_vpn_server(service: OpenVPNService = Depends(get_vpn_service)):
+async def restart_vpn_server(service: OpenVPNService = Depends(get_vpn_service)):  # noqa: B008
     """
     Restart the current OpenVPN connection.
     """
@@ -44,7 +44,7 @@ async def restart_vpn_server(service: OpenVPNService = Depends(get_vpn_service))
 
 
 @router.post("/enable", response_model=VPNSystemResponse)
-async def enable_vpn_server(service: OpenVPNService = Depends(get_vpn_service)):
+async def enable_vpn_server(service: OpenVPNService = Depends(get_vpn_service)):  # noqa: B008
     """
     Enable the openvpn service and start the OpenVPN connection.
     """
@@ -52,7 +52,7 @@ async def enable_vpn_server(service: OpenVPNService = Depends(get_vpn_service)):
 
 
 @router.post("/server", response_model=VPNUpdateResponse)
-async def update_vpn_server(payload: VPNUpdateRequest, service: OpenVPNService = Depends(get_vpn_service)):
+async def update_vpn_server(payload: VPNUpdateRequest, service: OpenVPNService = Depends(get_vpn_service)):  # noqa: B008
     """
     Update the VPN remote server. This triggers a service restart
     and verifies the connection (Wait-Loop).

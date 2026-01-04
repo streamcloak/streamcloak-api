@@ -101,7 +101,8 @@ class OpenVPNService:
         code, _, _ = run_command(["/usr/bin/systemctl", "is-active", "--quiet", self.service_name])
         return code == 0
 
-    def _check_tun_interface(self) -> bool:
+    @staticmethod
+    def _check_tun_interface() -> bool:
         # Crucial for Killswitch verification
         code, _, _ = run_command(["ip", "link", "show", "tun0"])
         return code == 0

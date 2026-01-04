@@ -33,8 +33,8 @@ def verify_token(token: str):
         if username is None:
             raise credentials_exception
         return username
-    except JWTError:
-        raise credentials_exception
+    except JWTError as e:
+        raise credentials_exception from e
 
 
 def check_refresh_eligibility(token: str) -> Optional[str]:

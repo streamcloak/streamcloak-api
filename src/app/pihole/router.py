@@ -10,27 +10,27 @@ router = APIRouter()
 
 
 @router.get("/summary", response_model=SummaryResponse)
-def get_summary(service: PiholeClient = Depends(get_pihole_service)):
+def get_summary(service: PiholeClient = Depends(get_pihole_service)):  # noqa: B008
     """Retrieve filtered summary statistics from Pi-hole."""
     return service.get_summary()
 
 
 @router.get("/status", response_model=PiholeStatusResponse)
-def get_status(service: PiholeClient = Depends(get_pihole_service)):
+def get_status(service: PiholeClient = Depends(get_pihole_service)):  # noqa: B008
     """Check if Pi-hole blocking is enabled."""
     is_blocking = service.get_status()
     return {"blocking": is_blocking}
 
 
 @router.post("/status", response_model=PiholeStatusResponse)
-def set_status(status_update: PiholeStatusUpdate, service: PiholeClient = Depends(get_pihole_service)):
+def set_status(status_update: PiholeStatusUpdate, service: PiholeClient = Depends(get_pihole_service)):  # noqa: B008
     """Enable or Disable Pi-hole blocking."""
     new_state = service.set_status(status_update.blocking)
     return {"blocking": new_state}
 
 
 @router.get("/whitelist", response_model=List[DomainItem])
-def get_whitelist(service: PiholeClient = Depends(get_pihole_service)):
+def get_whitelist(service: PiholeClient = Depends(get_pihole_service)):  # noqa: B008
     """Get all domains in the allow-list."""
     return service.get_whitelist()
 
@@ -39,7 +39,7 @@ def get_whitelist(service: PiholeClient = Depends(get_pihole_service)):
 def update_whitelist_entry(
     domain: str = Path(..., description="The domain to update/add"),
     payload: WhitelistUpdateRequest = None,
-    service: PiholeClient = Depends(get_pihole_service),
+    service: PiholeClient = Depends(get_pihole_service),  # noqa: B008
 ):
     """
     Update the status of a whitelist entry.
@@ -49,6 +49,6 @@ def update_whitelist_entry(
 
 
 @router.post("/whitelist/delete/{domain}", status_code=status.HTTP_204_NO_CONTENT)
-def remove_whitelist_entry(domain: str, service: PiholeClient = Depends(get_pihole_service)):
+def remove_whitelist_entry(domain: str, service: PiholeClient = Depends(get_pihole_service)):  # noqa: B008
     """Remove a domain from the whitelist."""
     service.delete_whitelist(domain)

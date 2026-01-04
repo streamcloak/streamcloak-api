@@ -4,6 +4,7 @@ import socket
 from pathlib import Path
 from typing import Any, Dict, List
 
+from app.core.logger import logger
 from app.core.utils import run_command
 
 TRACKER_FILE = Path("/tmp/client_history.json")
@@ -27,7 +28,8 @@ class ClientService:
             # Short timeout to prevent blocking the API if DNS is unresponsive
             socket.setdefaulttimeout(0.2)
             return socket.gethostbyaddr(ip_address)[0]
-        except Exception:
+        except Exception as e:
+            logger.warning(f"Cannot get hostname: {e}")
             return None
 
     @staticmethod
@@ -70,7 +72,8 @@ class ClientService:
         try:
             with open(TRACKER_FILE, "r") as f:
                 return json.load(f)
-        except Exception:
+        except Exception as e:
+            logger.warning(f"Cannot get tracker history: {e}")
             return {}
 
     def get_all_clients(self) -> List[Dict[str, Any]]:

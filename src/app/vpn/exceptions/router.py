@@ -36,4 +36,4 @@ async def get_domain_exceptions_route():
         logger.error(f"Failed to retrieve domain exceptions: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to retrieve domain exceptions: {str(e)}"
-        )
+        ) from e

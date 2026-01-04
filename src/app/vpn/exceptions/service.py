@@ -55,7 +55,7 @@ def save_domain_exceptions(data: Dict[str, bool]) -> None:
         logger.error(f"Failed to save domain exceptions: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not save configuration file."
-        )
+        ) from e
 
 
 def get_domain_exceptions_as_datatype() -> List[DomainExceptionEntry]:
@@ -122,7 +122,7 @@ def sync_domain_exceptions() -> bool:
         openvpn_service.start()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error syncing exceptions: {str(e)}"
-        )
+        ) from e
 
     # 4. Start OpenVPN
     openvpn_service.start()
@@ -150,7 +150,9 @@ def update_domain_exceptions(key: str, value: bool) -> None:
         raise
     except Exception as e:
         logger.error(f"Update error: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error updating entry: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error updating entry: {str(e)}"
+        ) from e
 
 
 def delete_domain_exception(key: str) -> None:
@@ -172,4 +174,6 @@ def delete_domain_exception(key: str) -> None:
         raise
     except Exception as e:
         logger.error(f"Delete error: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error deleting entry: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error deleting entry: {str(e)}"
+        ) from e

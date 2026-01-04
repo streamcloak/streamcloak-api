@@ -19,7 +19,7 @@ scheduler = AsyncIOScheduler()
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_app: FastAPI):
     from app.core.logger import logger
 
     logger.info("🚀  StreamCloak VPN Box API is starting up...")

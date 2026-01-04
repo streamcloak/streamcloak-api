@@ -40,7 +40,9 @@ class PiholeClient:
             else:
                 raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Pi-hole authentication failed")
         except requests.RequestException as e:
-            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Connection failure: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Connection failure: {str(e)}"
+            ) from e
 
     def _request(self, method: str, endpoint: str, json: Optional[Dict] = None, retry: bool = True) -> Any:
         """
@@ -77,7 +79,9 @@ class PiholeClient:
             return response.json()
 
         except requests.RequestException as e:
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Network Error: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Network Error: {str(e)}"
+            ) from e
 
     # --- Business Logic Methods ---
 
