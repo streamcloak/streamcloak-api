@@ -24,6 +24,8 @@ class Settings(BaseSettings):
 
     # --- APP SETTINGS ---
     DOMAIN_EXCEPTION_PATH: str = "/etc/openvpn/exceptions.json"
+    PIHOLE_API_URL: str = "https://127.0.0.1:8443/api"
+    PIHOLE_PASSWORD: str = "streamcloak"
 
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", env_ignore_empty=True, case_sensitive=True, extra="ignore"
