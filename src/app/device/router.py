@@ -38,7 +38,7 @@ def get_internal_ip(
         description="Network interface name (e.g., eth0, wlan0, tun0)",
         min_length=2,
         max_length=15,
-        regex="^[a-zA-Z0-9_\\-\\.]+$",  # SECURITY: Allow only valid interface chars
+        pattern="^[a-zA-Z0-9_\\-\\.]+$",  # SECURITY: Allow only valid interface chars
     ),
 ):
     """
