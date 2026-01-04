@@ -16,6 +16,16 @@ setup_logging()
 settings = get_settings()
 scheduler = AsyncIOScheduler()
 
+description = """
+This API is designed to work seamlessly with **FlutterFlow**.
+
+### ⚠️ Note on HTTP Methods
+To ensure this project can be forked and used **without requiring a paid FlutterFlow subscription**, this API
+creates an intentional restriction:
+* It strictly uses `GET` and `POST` requests only.
+* Standard `PUT`, `PATCH`, or `DELETE` methods are mapped to `POST` actions where necessary.
+"""
+
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
@@ -35,6 +45,7 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
+    description=description,
     version=settings.VERSION,
     docs_url=f"{settings.API_V1_STR}/docs",
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
