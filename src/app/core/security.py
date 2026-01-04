@@ -9,7 +9,7 @@ from app.core.config import get_settings
 
 settings = get_settings()
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
 
 
 def create_access_token(data: dict):
