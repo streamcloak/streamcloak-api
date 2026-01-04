@@ -1,8 +1,10 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from app.api import health
 from app.api.api_v1 import api_router as api_v1_router
@@ -39,6 +41,12 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     lifespan=lifespan,
 )
+
+ROOT_DIR = Path(__file__).resolve().parent
+STATIC_DIR = ROOT_DIR / "static"
+
+# Mounts config/static to /static URL
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 # Global / Health (without Prefix)
 app.include_router(health.router, tags=["Health"])
