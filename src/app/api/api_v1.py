@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from app.api import auth
+from app.clients import router as clients_router
 from app.core.dependencies import CheckAuth
 from app.device import router as device_router
 from app.iptv import router as iptv_router
@@ -15,6 +16,9 @@ api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 
 # 2. Protected Routes
+api_router.include_router(
+    clients_router.router, prefix="/clients", tags=["Connected Clients"], dependencies=[CheckAuth]
+)
 api_router.include_router(device_router.router, prefix="/device", tags=["Device Status"], dependencies=[CheckAuth])
 api_router.include_router(iptv_router.router, prefix="/iptv", tags=["IPTV Proxy"], dependencies=[CheckAuth])
 api_router.include_router(pihole_router.router, prefix="/pihole", tags=["PiHole Control"], dependencies=[CheckAuth])
