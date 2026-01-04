@@ -6,7 +6,6 @@ from apscheduler.triggers.interval import IntervalTrigger
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from app.api import health
 from app.api.api_v1 import api_router as api_v1_router
 from app.core.config import get_settings
 from app.core.logger import setup_logging
@@ -47,8 +46,5 @@ STATIC_DIR = ROOT_DIR / "static"
 
 # Mounts config/static to /static URL
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
-
-# Global / Health (without Prefix)
-app.include_router(health.router, tags=["Health"])
 
 app.include_router(api_v1_router, prefix=settings.API_V1_STR)

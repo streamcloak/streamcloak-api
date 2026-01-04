@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from app.api import auth
+from app.api import health as health_router
 from app.clients import router as clients_router
 from app.core.dependencies import CheckAuth
 from app.device import router as device_router
@@ -13,6 +14,7 @@ from app.wifi import router as wifi_router
 api_router = APIRouter()
 
 # 1. Public Routes
+api_router.include_router(health_router.router, prefix="/health", tags=["Healthcheck"], dependencies=[CheckAuth])
 api_router.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 
 # 2. Protected Routes
