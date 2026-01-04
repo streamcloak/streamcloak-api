@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 
-from app.api import auth
 from app.api import health as health_router
+from app.auth import router as auth_router
+from app.auth.dependencies import CheckAuth
 from app.clients import router as clients_router
-from app.core.dependencies import CheckAuth
 from app.device import router as device_router
 from app.iptv import router as iptv_router
 from app.pihole import router as pihole_router
@@ -15,7 +15,7 @@ api_router = APIRouter()
 
 # 1. Public Routes
 api_router.include_router(health_router.router, prefix="/health", tags=["Healthcheck"])
-api_router.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+api_router.include_router(auth_router.router, prefix="/auth", tags=["Authentication"])
 
 # 2. Protected Routes
 api_router.include_router(

@@ -3,8 +3,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
+from app.auth.schemas import Token
+from app.auth.service import check_refresh_eligibility, create_access_token, oauth2_scheme
 from app.core.config import get_settings
-from app.core.security import check_refresh_eligibility, create_access_token, oauth2_scheme
 
 router = APIRouter()
 settings = get_settings()
@@ -21,14 +22,17 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
 
     access_token = create_access_token(data={"sub": "user"})
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    context = {"access_token": access_token, "token_type": "bearer", "status": "valid"}
+    return Token.model_validate(context)
 
 
-@router.post("/refresh")
+@router.post("/refresh", response_model=Token)
 async def refresh_token(token: Annotated[str, Depends(oauth2_scheme)]):
     new_token = check_refresh_eligibility(token)
 
     if new_token:
-        return {"access_token": new_token, "token_type": "bearer", "status": "refreshed"}
+        context = {"access_token": new_token, "token_type": "bearer", "status": "refreshed"}
+    else:
+        context = {"access_token": token, "token_type": "bearer", "status": "valid"}
 
-    return {"message": "Token is still valid", "status": "valid"}
+    return Token.model_validate(context)
