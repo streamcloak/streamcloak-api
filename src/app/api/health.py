@@ -5,7 +5,7 @@ from app.core.logger import logger
 router = APIRouter()
 
 
-@router.get("/health")
+@router.get("")
 def health_check():
     logger.debug("Health check requested")
     return {"status": "ok"}

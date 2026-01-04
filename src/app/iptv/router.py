@@ -7,7 +7,7 @@ from app.iptv.schemas import IPTVProxyCreate, IPTVProxyResponse, ServiceOperatio
 router = APIRouter()
 
 
-@router.get("/", response_model=list[IPTVProxyResponse], summary="List all IPTV Proxies")
+@router.get("", response_model=list[IPTVProxyResponse], summary="List all IPTV Proxies")
 def get_proxies():
     """
     Retrieve a list of all configured IPTV proxy services.

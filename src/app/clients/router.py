@@ -13,7 +13,7 @@ def get_client_service():
     return ClientService()
 
 
-@router.get("/", response_model=List[ClientSchema])
+@router.get("", response_model=List[ClientSchema])
 async def get_active_clients(service: ClientService = Depends(get_client_service)):  # noqa: B008
     """
     Retrieve a consolidated list of all connected devices.
