@@ -4,15 +4,18 @@ import socket
 
 import psutil
 
+from app.core.config import get_settings
 from app.core.logger import logger
 from app.core.utils import run_command
-from app.device.schemas import DeviceStatusSummary, NetworkInfo, SystemResources
+from app.device.schemas import DeviceInfo, DeviceStatusSummary, NetworkInfo, SystemResources
 
 try:
     import fcntl
 except ModuleNotFoundError:
     pass  # you are on Windows
 import struct
+
+settings = get_settings()
 
 
 def _validate_system_user(username: str) -> bool:
@@ -184,4 +187,8 @@ def get_full_summary() -> DeviceStatusSummary:
     """
     Aggregates everything.
     """
-    return DeviceStatusSummary(resources=get_system_resources_data(), network=get_network_info_data())
+    return DeviceStatusSummary(
+        resources=get_system_resources_data(),
+        network=get_network_info_data(),
+        device=DeviceInfo(id=settings.DEVICE_ID),
+    )

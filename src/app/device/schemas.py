@@ -18,6 +18,10 @@ class SystemResources(BaseModel):
     cpu_temperature_status: int = Field(..., description="Temp Status: 1=<60C, 2=<75C, 3=>75C", ge=1, le=3)
 
 
+class DeviceInfo(BaseModel):
+    id: str = Field(..., description="Unique ID of this device", examples=["SC-FA34BD"])
+
+
 class SingleIPResponse(BaseModel):
     """
     Wrapper for single IP responses.
@@ -47,3 +51,4 @@ class DeviceStatusSummary(BaseModel):
 
     resources: SystemResources
     network: NetworkInfo
+    device: DeviceInfo

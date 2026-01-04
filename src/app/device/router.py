@@ -1,7 +1,11 @@
 from fastapi import APIRouter, Query
 
+from app.core.config import get_settings
 from app.device import service
-from app.device.schemas import DeviceStatusSummary, NetworkInfo, SingleIPResponse, SystemResources
+from app.device.schemas import DeviceInfo, DeviceStatusSummary, NetworkInfo, SingleIPResponse, SystemResources
+
+settings = get_settings()
+
 
 router = APIRouter()
 
@@ -21,6 +25,11 @@ def get_system_resources():
     High performance, no external network calls.
     """
     return service.get_system_resources_data()
+
+
+@router.get("/info", response_model=DeviceInfo)
+def get_device_info():
+    return DeviceInfo(id=settings.DEVICE_ID)
 
 
 @router.get("/network", response_model=NetworkInfo)

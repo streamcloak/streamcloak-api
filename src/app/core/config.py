@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = secrets.token_urlsafe(32)
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    DEVICE_ID: str = "SC-DEV1"
     DEVICE_PASSWORD: str = "streamcloak"
 
     # --- APP SETTINGS ---
