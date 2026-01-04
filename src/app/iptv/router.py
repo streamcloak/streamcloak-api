@@ -24,7 +24,7 @@ def get_proxy(port: int = Path(..., ge=9000, le=9999, description="The port of t
 
 
 @router.post(
-    "/create",
+    "",
     response_model=ServiceOperationResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Create a new IPTV Proxy",
@@ -43,7 +43,7 @@ def create_proxy(data: IPTVProxyCreate):
         ) from e
 
 
-@router.post("/update/{port}", response_model=ServiceOperationResponse, summary="Update Proxy")
+@router.put("/{port}", response_model=ServiceOperationResponse, summary="Update Proxy")
 def update_proxy(
     data: IPTVProxyCreate,
     port: int = Path(..., ge=9000, le=9999, description="The port of the proxy service"),
@@ -63,7 +63,7 @@ def update_proxy(
         ) from e
 
 
-@router.post("/delete/{port}", response_model=ServiceOperationResponse, summary="Delete Proxy")
+@router.delete("/{port}", response_model=ServiceOperationResponse, summary="Delete Proxy")
 def delete_proxy(port: int = Path(..., ge=9000, le=9999, description="The port of the proxy service")):
     """
     Stop users, disable, and remove the service files for the specified proxy.

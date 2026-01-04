@@ -32,7 +32,7 @@ def toggle_wifi(payload: schemas.WifiToggleRequest):
     return {"message": f"WiFi {state_str} successfully."}
 
 
-@router.post("/ssid", status_code=status.HTTP_200_OK)
+@router.put("/ssid", status_code=status.HTTP_200_OK)
 def update_ssid(payload: schemas.SSIDUpdateRequest):
     """
     Update the SSID (Network Name). Restarts WiFi if active.
@@ -45,7 +45,7 @@ def update_ssid(payload: schemas.SSIDUpdateRequest):
     return {"message": f"SSID updated to '{payload.ssid}'."}
 
 
-@router.post("/password", status_code=status.HTTP_200_OK)
+@router.put("/password", status_code=status.HTTP_200_OK)
 def update_password(payload: schemas.PasswordUpdateRequest):
     """
     Update the WPA2 Password. Restarts WiFi if active.

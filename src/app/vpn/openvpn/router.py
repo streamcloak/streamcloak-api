@@ -51,7 +51,7 @@ async def enable_vpn_server(service: OpenVPNService = Depends(get_vpn_service)):
     return VPNSystemResponse(success=service.start())
 
 
-@router.post("/server", response_model=VPNUpdateResponse)
+@router.put("/server", response_model=VPNUpdateResponse)
 async def update_vpn_server(payload: VPNUpdateRequest, service: OpenVPNService = Depends(get_vpn_service)):  # noqa: B008
     """
     Update the VPN remote server. This triggers a service restart

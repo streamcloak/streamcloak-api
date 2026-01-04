@@ -35,7 +35,7 @@ def get_whitelist(service: PiholeClient = Depends(get_pihole_service)):  # noqa:
     return service.get_whitelist()
 
 
-@router.post("/whitelist/update/{domain}", status_code=status.HTTP_204_NO_CONTENT)
+@router.put("/whitelist/{domain}", status_code=status.HTTP_204_NO_CONTENT)
 def update_whitelist_entry(
     domain: str = Path(..., description="The domain to update/add"),
     payload: WhitelistUpdateRequest = None,
@@ -48,7 +48,7 @@ def update_whitelist_entry(
     service.update_whitelist(domain, payload.enabled)
 
 
-@router.post("/whitelist/delete/{domain}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/whitelist/{domain}", status_code=status.HTTP_204_NO_CONTENT)
 def remove_whitelist_entry(domain: str, service: PiholeClient = Depends(get_pihole_service)):  # noqa: B008
     """Remove a domain from the whitelist."""
     service.delete_whitelist(domain)
