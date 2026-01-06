@@ -12,7 +12,7 @@ settings = get_settings()
 SERVER_FILE_PATH = Path(settings.WORKING_DIR) / Path("src/app/vpn/providers/cyberghost/servers.json")
 
 
-def fetch_cyberghost_servers() -> list:
+def fetch_cyberghost_server() -> list:
     usable_servers: List[VpnServer] = []
 
     # Fehlerbehandlung: Wenn die Datei noch nicht existiert (z.B. erster Start)
