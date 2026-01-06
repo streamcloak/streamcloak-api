@@ -65,7 +65,6 @@ def get_external_ip_address(user: str = "iptvproxy") -> str | None:
             provider,
         ]
 
-        # We assume run_command handles the subprocess call safely
         return_code, stdout, stderr = run_command(cmd)
 
         if return_code == 0 and len(stdout) < 20:  # simple sanity check on IP length
@@ -183,6 +182,18 @@ def get_network_info_data() -> NetworkInfo:
     return NetworkInfo(internal_ip=get_internal_ip_address("eth0"), external_ip=get_external_ip_address())
 
 
+def get_hostname() -> str:
+    return socket.gethostname()
+
+
+def restart_device():
+    run_command(["sudo", "reboot"])
+
+
+def get_device_info() -> DeviceInfo:
+    return DeviceInfo(id=settings.DEVICE_ID, model=settings.DEVICE_MODEL, hostname=get_hostname())
+
+
 def get_full_summary() -> DeviceStatusSummary:
     """
     Aggregates everything.
@@ -190,5 +201,5 @@ def get_full_summary() -> DeviceStatusSummary:
     return DeviceStatusSummary(
         resources=get_system_resources_data(),
         network=get_network_info_data(),
-        device=DeviceInfo(id=settings.DEVICE_ID),
+        device=get_device_info(),
     )

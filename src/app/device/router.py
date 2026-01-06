@@ -29,7 +29,7 @@ def get_system_resources():
 
 @router.get("/info", response_model=DeviceInfo)
 def get_device_info():
-    return DeviceInfo(id=settings.DEVICE_ID)
+    return service.get_device_info()
 
 
 @router.get("/network", response_model=NetworkInfo)

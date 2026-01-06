@@ -20,6 +20,8 @@ class SystemResources(BaseModel):
 
 class DeviceInfo(BaseModel):
     id: str = Field(..., description="Unique ID of this device", examples=["SC-FA34BD"])
+    model: str = Field(..., description="Model type of this device", examples=["V1-PRO"])
+    hostname: str = Field(..., description="Hostname of this device", examples=["sc1"])
 
 
 class SingleIPResponse(BaseModel):
