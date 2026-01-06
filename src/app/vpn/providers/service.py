@@ -5,17 +5,22 @@ import httpx
 
 from app.core.config import get_settings
 from app.core.logger import logger
+from app.vpn.providers.cyberghost.service import fetch_cyberghost_server
 
 settings = get_settings()
 
-# URL der Gluetun Server Liste
 SERVERS_JSON_URL = "https://raw.githubusercontent.com/qdm12/gluetun/master/internal/storage/servers.json"
-
-# Basis-Pfad anpassen (Absoluter Pfad ist auf dem Pi sicherer)
 BASE_DIR = Path(settings.WORKING_DIR) / Path("src/app/vpn/providers")
-
-# Welche Anbieter sollen extrahiert werden?
 TARGET_PROVIDERS = ["cyberghost"]
+
+
+def fetch_vpn_server(provider: str) -> list:
+    if provider not in TARGET_PROVIDERS:
+        raise ValueError(f"Provider '{provider}' not supported.")
+
+    if provider == "cyberghost":
+        return fetch_cyberghost_server()
+    return []
 
 
 async def update_vpn_servers():
