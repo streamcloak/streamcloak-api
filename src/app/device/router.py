@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, status
 
 from app.core.config import get_settings
 from app.device import service
@@ -75,3 +75,11 @@ def get_external_ip():
     """
     ip = service.get_external_ip_address()
     return SingleIPResponse(ip_address=ip)
+
+
+@router.post("/restart", status_code=status.HTTP_204_NO_CONTENT)
+def restart():
+    """
+    Restart the device
+    """
+    service.restart_device()
