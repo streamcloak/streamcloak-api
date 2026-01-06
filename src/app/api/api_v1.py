@@ -4,6 +4,7 @@ from app.api import health as health_router
 from app.auth import router as auth_router
 from app.auth.dependencies import CheckAuth
 from app.clients import router as clients_router
+from app.dashboard import router as dashboard_router
 from app.device import router as device_router
 from app.iptv import router as iptv_router
 from app.pihole import router as pihole_router
@@ -21,6 +22,7 @@ api_router.include_router(auth_router.router, prefix="/auth", tags=["Authenticat
 api_router.include_router(
     clients_router.router, prefix="/clients", tags=["Connected Clients"], dependencies=[CheckAuth]
 )
+api_router.include_router(dashboard_router.router, prefix="/dashboard", tags=["Dashboard"], dependencies=[CheckAuth])
 api_router.include_router(device_router.router, prefix="/device", tags=["Device Status"], dependencies=[CheckAuth])
 api_router.include_router(iptv_router.router, prefix="/iptv", tags=["IPTV Proxy"], dependencies=[CheckAuth])
 api_router.include_router(pihole_router.router, prefix="/pihole", tags=["PiHole Control"], dependencies=[CheckAuth])
