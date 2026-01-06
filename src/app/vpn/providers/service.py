@@ -27,7 +27,7 @@ def connected_vpn_server_info() -> Optional[VpnServerCurrent]:
                     provider=vpn_server_by_provider.provider,
                     hostname=vpn_server.hostname,
                     country=vpn_server.country,
-                    code=vpn_server.country_code,
+                    country_code=vpn_server.country_code,
                     is_connected=vpn_server.is_connected,
                 )
     return None

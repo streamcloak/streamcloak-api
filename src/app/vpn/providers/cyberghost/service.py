@@ -47,7 +47,7 @@ def fetch_cyberghost_server() -> list[VpnServer]:
 
                 vpn_server = VpnServer(
                     hostname=hostname,
-                    code=country_code,  # 'code' maps to 'country_code' via alias
+                    country_code=country_code,
                     country=country,
                     is_connected=(hostname == current_vpn_address),
                 )

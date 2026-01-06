@@ -9,7 +9,7 @@ class VpnServer(BaseModel):
     """
 
     hostname: str = Field(..., description="The full hostname of the VPN server")
-    country_code: str = Field(..., alias="code", description="ISO country code extracted from hostname")
+    country_code: str = Field(..., description="ISO country code extracted from hostname")
     country: str = Field(..., description="Full country name")
     is_connected: bool = Field(False, description="True if the device is currently connected to this server")
 
