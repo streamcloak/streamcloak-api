@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.auth.schemas import Token
-from app.auth.service import check_refresh_eligibility, create_access_token, oauth2_scheme
+from app.auth.service import check_refresh_eligibility, create_access_token, oauth2_scheme, verify_token
 from app.core.config import get_settings
 
 router = APIRouter()
@@ -33,6 +33,7 @@ async def refresh_token(token: Annotated[str, Depends(oauth2_scheme)]):
     if new_token:
         context = {"access_token": new_token, "token_type": "bearer", "status": "refreshed"}
     else:
-        context = {"access_token": token, "token_type": "bearer", "status": "valid"}
+        valid_token = verify_token(token)
+        context = {"access_token": valid_token, "token_type": "bearer", "status": "valid"}
 
     return Token.model_validate(context)
