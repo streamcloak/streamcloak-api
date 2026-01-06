@@ -1,21 +1,40 @@
-import json
-from pathlib import Path
+from typing import Optional
 
-import httpx
-
-from app.core.config import get_settings
-from app.core.logger import logger
+from app.core.constants import VPN_PROVIDERS
+from app.vpn.openvpn.service import OpenVPNService
 from app.vpn.providers.cyberghost.service import fetch_cyberghost_server
-
-settings = get_settings()
-
-SERVERS_JSON_URL = "https://raw.githubusercontent.com/qdm12/gluetun/master/internal/storage/servers.json"
-BASE_DIR = Path(settings.WORKING_DIR) / Path("src/app/vpn/providers")
-TARGET_PROVIDERS = ["cyberghost"]
+from app.vpn.providers.schemas import VpnServer, VpnServerByProvider, VpnServerCurrent
 
 
-def fetch_vpn_server(provider: str) -> list:
-    if provider not in TARGET_PROVIDERS:
+def connected_vpn_server_info() -> Optional[VpnServerCurrent]:
+    """
+    Searches for a specific server in the provided list.
+
+    Logic:
+    Returns the server object if:
+    1. The hostname matches the requested hostname.
+    2. OR the server is currently marked as connected.
+
+    Returns None if no match is found.
+    """
+    openvpn_service = OpenVPNService()
+    hostname = openvpn_service.get_remote_address()
+
+    for vpn_server_by_provider in fetch_all_vpn_server():
+        for vpn_server in vpn_server_by_provider.servers:
+            if hostname == vpn_server.hostname or vpn_server.is_connected:
+                return VpnServerCurrent(
+                    provider=vpn_server_by_provider.provider,
+                    hostname=vpn_server.hostname,
+                    country=vpn_server.country,
+                    code=vpn_server.country_code,
+                    is_connected=vpn_server.is_connected,
+                )
+    return None
+
+
+def fetch_vpn_server(provider: str) -> list[VpnServer]:
+    if provider not in VPN_PROVIDERS:
         raise ValueError(f"Provider '{provider}' not supported.")
 
     if provider == "cyberghost":
@@ -23,42 +42,8 @@ def fetch_vpn_server(provider: str) -> list:
     return []
 
 
-async def update_vpn_servers():
-    logger.info("Starting update of VPN server lists...")
-
-    if settings.ENVIRONMENT == "dev":
-        logger.debug("Do not fetch servers in dev mode...")
-        return
-
-    try:
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(SERVERS_JSON_URL, timeout=30.0)
-            resp.raise_for_status()
-
-            full_data = resp.json()
-
-        for provider in TARGET_PROVIDERS:
-            provider_data = full_data.get(provider)
-
-            if not provider_data:
-                logger.warning(f"Provider ‘{provider}’ not found in the master list.")
-                continue
-
-            provider_dir = BASE_DIR / provider
-            provider_dir.mkdir(parents=True, exist_ok=True)
-
-            target_file = provider_dir / "servers.json"
-
-            with open(target_file, "w", encoding="utf-8") as f:
-                json.dump({provider: provider_data}, f, indent=2)
-
-            logger.info(f"Updated {provider} -> {target_file}")
-
-    except httpx.TimeoutException:
-        logger.warning("Timeout connecting to Gluetun Github repo. Skipping update.")
-    except httpx.ConnectError:
-        logger.warning("Network connection failed (DNS/Offline). Skipping update.")
-    except httpx.HTTPStatusError as e:
-        logger.error(f"GitHub returned error status: {e.response.status_code}")
-    except Exception as e:
-        logger.error(f"Error updating VPN server lists: {e}")
+def fetch_all_vpn_server() -> list[VpnServerByProvider]:
+    servers: list[VpnServerByProvider] = []
+    for provider in VPN_PROVIDERS:
+        servers.append(VpnServerByProvider(provider=provider, servers=fetch_vpn_server(provider)))
+    return []

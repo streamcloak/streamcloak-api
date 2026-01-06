@@ -6,16 +6,16 @@ from app.core.config import get_settings
 from app.core.logger import logger
 from app.vpn.openvpn.service import OpenVPNService
 from app.vpn.providers.schemas import VpnServer
+from app.vpn.providers.tasks import update_vpn_servers
 
 settings = get_settings()
 
 SERVER_FILE_PATH = Path(settings.WORKING_DIR) / Path("src/app/vpn/providers/cyberghost/servers.json")
 
 
-def fetch_cyberghost_server() -> list:
+def fetch_cyberghost_server() -> list[VpnServer]:
     usable_servers: List[VpnServer] = []
 
-    # Fehlerbehandlung: Wenn die Datei noch nicht existiert (z.B. erster Start)
     if not SERVER_FILE_PATH.exists():
         logger.error(f"Server file not found: {SERVER_FILE_PATH}")
         return []
@@ -33,14 +33,14 @@ def fetch_cyberghost_server() -> list:
 
         for server in server_list:
             hostname = server.get("hostname", "")
+            country = server.get("country", "")
             is_udp = server.get("udp", False)
 
-            # Hinweis: Prüfe ob "87-1-" wirklich dauerhaft korrekt ist.
+            # Note: Check if "87-1-" is a permanent solution.
             if is_udp and hostname.startswith("87-1-"):
                 # Extract Country Code
                 try:
-                    # Beispiel hostname: "87-1-de.cg-dialup.net" -> "de"
-                    # Split logic muss zum Hostname Pattern passen
+                    # Example hostname: "87-1-de.cg-dialup.net" -> "de"
                     country_code = hostname.split(".")[0].split("-")[-1]
                 except (IndexError, AttributeError):
                     country_code = "xx"
@@ -48,14 +48,16 @@ def fetch_cyberghost_server() -> list:
                 vpn_server = VpnServer(
                     hostname=hostname,
                     code=country_code,  # 'code' maps to 'country_code' via alias
+                    country=country,
                     is_connected=(hostname == current_vpn_address),
                 )
 
                 usable_servers.append(vpn_server)
 
     except json.JSONDecodeError:
-        logger.error("Fehler: servers.json ist korrupt.")
+        logger.error("Error: servers.json ist corrupted.")
+        update_vpn_servers()
     except Exception as e:
-        logger.error(f"Kritischer Fehler beim Parsen der Serverliste: {e}")
+        logger.error(f"Critical error parsing the server list: {e}")
 
     return usable_servers

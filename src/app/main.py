@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from app.api.api_v1 import api_router as api_v1_router
 from app.core.config import get_settings
 from app.core.logger import setup_logging
-from app.vpn.providers.service import update_vpn_servers
+from app.vpn.providers.tasks import update_vpn_servers
 
 setup_logging()
 
