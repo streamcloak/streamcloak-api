@@ -8,6 +8,7 @@ from app.dashboard import router as dashboard_router
 from app.device import router as device_router
 from app.iptv import router as iptv_router
 from app.pihole import router as pihole_router
+from app.setup_status import router as setup_status_router
 from app.vpn.exceptions import router as vpn_exceptions_router
 from app.vpn.openvpn import router as vpn_openvpn_router
 from app.vpn.providers import router as vpn_providers_router
@@ -37,3 +38,6 @@ api_router.include_router(
     vpn_providers_router.router, prefix="/vpn/providers", tags=["VPN Provider"], dependencies=[CheckAuth]
 )
 api_router.include_router(wifi_router.router, prefix="/wifi", tags=["WiFi Control"], dependencies=[CheckAuth])
+api_router.include_router(
+    setup_status_router.router, prefix="/setup-status", tags=["User Setup Status"], dependencies=[CheckAuth]
+)
