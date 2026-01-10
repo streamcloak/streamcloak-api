@@ -67,7 +67,7 @@ def _is_port_open(port: int) -> bool:
         return False
 
 
-def _parse_script_content(filepath: str) -> IPTVProxyCreate | None:
+def _parse_script_content(filepath: str) -> dict | None:
     """
     Reads the shell script and extracts the arguments via regex.
     """
@@ -91,7 +91,7 @@ def _parse_script_content(filepath: str) -> IPTVProxyCreate | None:
             if match:
                 data[key] = match.group(1)
 
-        return IPTVProxyCreate.model_validate(data)
+        return data
     except Exception as e:
         logger.error(f"Error parsing {filepath}: {str(e)}")
         return None
@@ -209,9 +209,9 @@ def _get_service_data(port: int, current_ip: str = None) -> IPTVProxyResponse | 
         config = _parse_script_content(script_path)
         service_name_ui = _get_description_from_unit(service_path)
 
-        host_to_use = config.hostname or current_ip
+        host_to_use = config.get("hostname") or current_ip
 
-        if config.xtream_base_url:
+        if config.get("xtream_base_url"):
             mode = "xtream"
             proxy_url = f"http://{host_to_use}:{port}"
         else:
