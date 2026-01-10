@@ -7,6 +7,7 @@ from app.clients import router as clients_router
 from app.dashboard import router as dashboard_router
 from app.device import router as device_router
 from app.iptv import router as iptv_router
+from app.maintenance import router as maintenance_router
 from app.pihole import router as pihole_router
 from app.setup_status import router as setup_status_router
 from app.vpn.exceptions import router as vpn_exceptions_router
@@ -28,6 +29,9 @@ api_router.include_router(dashboard_router.router, prefix="/dashboard", tags=["D
 api_router.include_router(device_router.router, prefix="/device", tags=["Device Status"], dependencies=[CheckAuth])
 api_router.include_router(iptv_router.router, prefix="/iptv", tags=["IPTV Proxy"], dependencies=[CheckAuth])
 api_router.include_router(pihole_router.router, prefix="/pihole", tags=["PiHole Control"], dependencies=[CheckAuth])
+api_router.include_router(
+    maintenance_router.router, prefix="/maintenance", tags=["Maintenance"], dependencies=[CheckAuth]
+)
 api_router.include_router(
     setup_status_router.router, prefix="/setup-status", tags=["User Setup Status"], dependencies=[CheckAuth]
 )
