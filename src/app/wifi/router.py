@@ -12,9 +12,8 @@ def get_wifi_status():
     """
     is_enabled = service.get_wifi_status_file()
     current_ssid = service.read_config_value("ssid")
-    current_pass = service.read_config_value("wpa_passphrase")
 
-    return schemas.WifiStatusResponse(enabled=is_enabled, ssid=current_ssid, password=current_pass)
+    return schemas.WifiStatusResponse(enabled=is_enabled, ssid=current_ssid)
 
 
 @router.post("/toggle", status_code=status.HTTP_200_OK)

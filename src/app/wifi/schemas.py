@@ -8,9 +8,6 @@ class WifiStatusResponse(BaseModel):
 
     enabled: bool = Field(..., description="Current status of the Hostapd service")
     ssid: str = Field(..., description="Current SSID (Network Name)")
-    # Note: Returning the password is a security trade-off.
-    # Necessary if the admin needs to recover it, but handle with care in Frontend.
-    password: str = Field(..., description="Current WPA2 Passphrase")
 
     model_config = ConfigDict(from_attributes=True)
 
