@@ -74,23 +74,31 @@ def _parse_script_content(filepath: str) -> dict | None:
     try:
         with open(filepath, "r") as f:
             content = f.read()
+        tokens = shlex.split(content)
 
         data = {}
-        patterns = {
-            "m3u_url": r'--m3u-url\s+"?([^"\s\\]+)"?',
-            "hostname": r'--hostname\s+"?([^"\s\\]+)"?',
-            "user": r'--user\s+"?([^"\s\\]+)"?',  # does not match --xtream-user because of the space
-            "password": r'(?<!xtream-)--password\s+"?([^"\s\\]+)"?',
-            "xtream_user": r'--xtream-user\s+"?([^"\s\\]+)"?',
-            "xtream_password": r'--xtream-password\s+"?([^"\s\\]+)"?',
-            "xtream_base_url": r'--xtream-base-url\s+"?([^"\s\\]+)"?',
+
+        # Mapping from CLI-Parametern to internal keys
+        key_map = {
+            "--m3u-url": "m3u_url",
+            "--hostname": "hostname",
+            "--user": "user",
+            "--password": "password",
+            "--xtream-user": "xtream_user",
+            "--xtream-password": "xtream_password",
+            "--xtream-base-url": "xtream_base_url",
         }
 
-        for key, pattern in patterns.items():
-            match = re.search(pattern, content)
-            if match:
-                data[key] = match.group(1)
+        iterator = iter(tokens)
+        for token in iterator:
+            if token in key_map:
+                try:
+                    value = next(iterator)
 
+                    data[key_map[token]] = value
+                except StopIteration:
+                    pass
+        print(data)
         return data
     except Exception as e:
         logger.error(f"Error parsing {filepath}: {str(e)}")
@@ -289,7 +297,7 @@ def get_all_services() -> list[IPTVProxyResponse]:
         if data:
             services.append(data)
 
-    services.sort(key=lambda x: x["name"])
+    services.sort(key=lambda x: x.name)
     return services
 
 
