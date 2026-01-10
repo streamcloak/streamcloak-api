@@ -46,4 +46,4 @@ def fetch_all_vpn_server() -> list[VpnServerByProvider]:
     servers: list[VpnServerByProvider] = []
     for provider in VPN_PROVIDERS:
         servers.append(VpnServerByProvider(provider=provider, servers=fetch_vpn_server(provider)))
-    return []
+    return servers
