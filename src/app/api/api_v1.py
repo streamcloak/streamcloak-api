@@ -29,6 +29,9 @@ api_router.include_router(device_router.router, prefix="/device", tags=["Device 
 api_router.include_router(iptv_router.router, prefix="/iptv", tags=["IPTV Proxy"], dependencies=[CheckAuth])
 api_router.include_router(pihole_router.router, prefix="/pihole", tags=["PiHole Control"], dependencies=[CheckAuth])
 api_router.include_router(
+    setup_status_router.router, prefix="/setup-status", tags=["User Setup Status"], dependencies=[CheckAuth]
+)
+api_router.include_router(
     vpn_exceptions_router.router, prefix="/vpn/exceptions", tags=["VPN Domain Exceptions"], dependencies=[CheckAuth]
 )
 api_router.include_router(
@@ -38,6 +41,3 @@ api_router.include_router(
     vpn_providers_router.router, prefix="/vpn/providers", tags=["VPN Provider"], dependencies=[CheckAuth]
 )
 api_router.include_router(wifi_router.router, prefix="/wifi", tags=["WiFi Control"], dependencies=[CheckAuth])
-api_router.include_router(
-    setup_status_router.router, prefix="/setup-status", tags=["User Setup Status"], dependencies=[CheckAuth]
-)
