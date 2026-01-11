@@ -38,6 +38,12 @@ class ClientSchema(BaseModel):
         examples=["1h 20m", "45s", "> 1d"],
     )
 
+    connection_time_seconds: int = Field(
+        ...,
+        title="Connection Duration",
+        description="In Seconds zu use in logic indicating how long the device has been active.",
+    )
+
     wifi: bool = Field(
         ...,
         title="WiFi Connected",
@@ -64,6 +70,7 @@ class ClientSchema(BaseModel):
                 "device_mac": "12:34:56:78:90:AB",
                 "hostname": "Johns-iPhone",
                 "connection_time": "2h 5m",
+                "connection_time_seconds": 7545,
                 "wifi": True,
                 "gateway": False,
                 "iptv": False,

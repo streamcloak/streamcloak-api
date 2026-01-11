@@ -112,6 +112,7 @@ class ClientService:
                 "device_mac": mac or "",
                 "hostname": data.get("hostname") or self._get_hostname(ip),
                 "connection_time": conn_time_str,
+                "connection_time_seconds": conn_diff,
                 "wifi": False,
                 "gateway": "gateway" in data.get("types", []),
                 "iptv": "iptv" in data.get("types", []),
