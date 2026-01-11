@@ -33,6 +33,7 @@ class SummaryClients(BaseModel):
 
 class SummaryResponse(BaseModel):
     domains_being_blocked: int
+    last_update: int
     dns_queries_today: int
     ads_blocked_today: int
     ads_percentage_today: int

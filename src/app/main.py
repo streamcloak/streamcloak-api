@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from app.api.api_v1 import api_router as api_v1_router
 from app.core.config import get_settings
 from app.core.logger import setup_logging
+from app.pihole.service import update_gravity
 from app.vpn.providers.tasks import update_vpn_servers
 
 setup_logging()
@@ -25,8 +26,10 @@ async def lifespan(_app: FastAPI):
     import asyncio
 
     asyncio.create_task(update_vpn_servers())
+    asyncio.create_task(update_gravity())
 
     scheduler.add_job(update_vpn_servers, trigger=IntervalTrigger(weeks=1), id="update_vpn_list", replace_existing=True)
+    scheduler.add_job(update_gravity, trigger=IntervalTrigger(weeks=1), id="update_gravity", replace_existing=True)
     scheduler.start()
 
     yield

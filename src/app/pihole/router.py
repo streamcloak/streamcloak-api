@@ -1,10 +1,17 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, Path, status
+from fastapi import APIRouter, BackgroundTasks, Depends, Path, status
 
-from .client import PiholeClient
-from .dependencies import get_pihole_service
-from .schemas import DomainItem, PiholeStatusResponse, PiholeStatusUpdate, SummaryResponse, WhitelistUpdateRequest
+from app.pihole.client import PiholeClient
+from app.pihole.dependencies import get_pihole_service
+from app.pihole.schemas import (
+    DomainItem,
+    PiholeStatusResponse,
+    PiholeStatusUpdate,
+    SummaryResponse,
+    WhitelistUpdateRequest,
+)
+from app.pihole.service import update_gravity
 
 router = APIRouter()
 
@@ -37,6 +44,7 @@ def get_whitelist(service: PiholeClient = Depends(get_pihole_service)):  # noqa:
 
 @router.put("/whitelist/{domain}", status_code=status.HTTP_204_NO_CONTENT)
 def update_whitelist_entry(
+    background_tasks: BackgroundTasks,
     domain: str = Path(..., description="The domain to update/add"),
     payload: WhitelistUpdateRequest = None,
     service: PiholeClient = Depends(get_pihole_service),  # noqa: B008
@@ -46,9 +54,15 @@ def update_whitelist_entry(
     Creates the entry if it does not exist.
     """
     service.update_whitelist(domain, payload.enabled)
+    background_tasks.add_task(update_gravity)
 
 
 @router.delete("/whitelist/{domain}", status_code=status.HTTP_204_NO_CONTENT)
-def remove_whitelist_entry(domain: str, service: PiholeClient = Depends(get_pihole_service)):  # noqa: B008
+def remove_whitelist_entry(
+    domain: str,
+    background_tasks: BackgroundTasks,
+    service: PiholeClient = Depends(get_pihole_service),  # noqa: B008
+):
     """Remove a domain from the whitelist."""
     service.delete_whitelist(domain)
+    background_tasks.add_task(update_gravity)

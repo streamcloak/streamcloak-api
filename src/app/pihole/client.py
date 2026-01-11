@@ -109,6 +109,7 @@ class PiholeClient:
         # Build response matching schemas.SummaryResponse
         transformed_data = {
             "domains_being_blocked": gravity.get("domains_being_blocked", 0),
+            "last_update": gravity.get("last_update", 0),
             "dns_queries_today": queries.get("total", 0),
             "ads_blocked_today": queries.get("blocked", 0),
             "ads_percentage_today": int(round(queries.get("percent_blocked", 0.0))),
