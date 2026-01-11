@@ -170,7 +170,8 @@ def _write_service_files(port: int, data: IPTVProxyCreate) -> str:
         "StandardOutput=null\n"
         "StandardError=null\n"
         "Restart=always\n"
-        "RestartSec=20\n\n"
+        "RestartSec=20\n"
+        "BindReadOnlyPaths=/etc/resolv.iptv-proxy.conf:/etc/resolv.conf\n\n"
         "[Install]\n"
         "WantedBy=multi-user.target\n"
     )
