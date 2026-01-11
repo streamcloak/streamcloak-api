@@ -12,9 +12,10 @@ class ProxyMode(str, Enum):
 
 
 class ServiceStatus(str, Enum):
-    ACTIVE = "active"
     RUNNING = "running"
     STOPPED = "stopped"
+    STARTING = "starting"
+    FAILED = "failed"
 
 
 class ServiceAction(str, Enum):
@@ -28,6 +29,7 @@ class IPTVProxyBase(BaseModel):
     name: str = Field(..., description="Name of the service, e.g., My IPTV Proxy")
     user: str = Field(..., description="Username for proxy access")
     password: str = Field(..., description="Password for proxy access")
+    hostname: str = Field(..., description="Hostname the proxy listens")
     m3u_url: Optional[str] = None
 
     @field_validator("name")
@@ -39,11 +41,11 @@ class IPTVProxyBase(BaseModel):
             raise ValueError("Name contains invalid characters.")
         return v.strip()
 
-    @field_validator("user", "password")
+    @field_validator("user", "password", "hostname")
     @classmethod
     def validate_credentials(cls, v):
         if " " in v:
-            raise ValueError("Username and password must not contain any spaces.")
+            raise ValueError("Username, password and hostname must not contain any spaces.")
         if not re.match(r"^[a-zA-Z0-9._-]+$", v):
             raise ValueError("Only letters, numbers, periods, hyphens, and underscores are allowed.")
         return v

@@ -10,8 +10,7 @@ from fastapi import HTTPException
 
 from app.core.logger import logger
 from app.core.utils import run_command
-from app.device.service import get_internal_ip_address
-from app.iptv.schemas import IPTVProxyCreate, IPTVProxyResponse, ServiceOperationResponse
+from app.iptv.schemas import IPTVProxyCreate, IPTVProxyResponse, ServiceOperationResponse, ServiceStatus
 
 SERVICE_DIR = "/etc/systemd/system"
 SCRIPT_DIR = "/usr/local/bin"
@@ -116,7 +115,6 @@ def _write_service_files(port: int, data: IPTVProxyCreate) -> str:
     script_name = f"iptv-proxy-{port}.sh"
     script_path = os.path.join(SCRIPT_DIR, script_name)
     service_path = os.path.join(SERVICE_DIR, service_name)
-    internal_ip = get_internal_ip_address()
 
     base_cmd = ["/usr/bin/iptv-proxy"]
     cmd_args_list = []
@@ -132,7 +130,7 @@ def _write_service_files(port: int, data: IPTVProxyCreate) -> str:
 
         cmd_args_list.append(("--m3u-url", full_m3u_url))
         cmd_args_list.append(("--port", str(port)))
-        cmd_args_list.append(("--hostname", internal_ip))
+        cmd_args_list.append(("--hostname", data.hostname))
         cmd_args_list.append(("--xtream-user", data.xtream_user))
         cmd_args_list.append(("--xtream-password", data.xtream_password))
         cmd_args_list.append(("--xtream-base-url", data.xtream_base_url))
@@ -145,7 +143,7 @@ def _write_service_files(port: int, data: IPTVProxyCreate) -> str:
 
         cmd_args_list.append(("--m3u-url", data.m3u_url))
         cmd_args_list.append(("--port", str(port)))
-        cmd_args_list.append(("--hostname", internal_ip))
+        cmd_args_list.append(("--hostname", data.hostname))
         cmd_args_list.append(("--user", data.user))
         cmd_args_list.append(("--password", data.password))
 
@@ -196,7 +194,7 @@ def _write_service_files(port: int, data: IPTVProxyCreate) -> str:
     return service_name
 
 
-def _get_service_data(port: int, current_ip: str = None) -> IPTVProxyResponse | None:
+def _get_service_data(port: int) -> IPTVProxyResponse | None:
     """
     Central logic: Collects all information for a specific port.
     Returns None if the files are missing or corrupt.
@@ -211,49 +209,44 @@ def _get_service_data(port: int, current_ip: str = None) -> IPTVProxyResponse | 
         return None
 
     try:
-        if current_ip is None:
-            current_ip = get_internal_ip_address()
-
         config = _parse_script_content(script_path)
         service_name_ui = _get_description_from_unit(service_path)
 
-        host_to_use = config.get("hostname") or current_ip
+        hostname = config.get("hostname")
 
         if config.get("xtream_base_url"):
             mode = "xtream"
-            proxy_url = f"http://{host_to_use}:{port}"
+            proxy_url = f"http://{hostname}:{port}"
         else:
             mode = "m3u"
             user = config.get("user", "")
             pw = config.get("password", "")
-            proxy_url = f"http://{host_to_use}:{port}/iptv.m3u?username={user}&password={pw}"
+            proxy_url = f"http://{hostname}:{port}/iptv.m3u?username={user}&password={pw}"
 
         is_active = False
         is_enabled = False
         try:
-            subprocess.run(["systemctl", "is-active", "--quiet", service_name], check=True)
+            run_command(["systemctl", "is-active", "--quiet", service_name], check=True)
             is_active = True
         except subprocess.CalledProcessError:
             pass
 
         try:
-            subprocess.run(["systemctl", "is-enabled", "--quiet", service_name], check=True)
+            run_command(["systemctl", "is-enabled", "--quiet", service_name], check=True)
             is_enabled = True
         except subprocess.CalledProcessError:
             pass
 
-        status_detail = "stopped"
+        status_detail = ServiceStatus.STOPPED
         if is_active:
             if _is_port_open(port):
-                status_detail = "running"
+                status_detail = ServiceStatus.RUNNING
             else:
-                status_detail = "starting"
+                status_detail = ServiceStatus.STARTING
         else:
-            cmd = subprocess.run(
-                ["systemctl", "show", "-p", "ActiveState", service_name], capture_output=True, text=True
-            )
-            if "failed" in cmd.stdout:
-                status_detail = "failed"
+            _, stdout, _ = run_command(["systemctl", "show", "-p", "ActiveState", service_name])
+            if "failed" in stdout:
+                status_detail = ServiceStatus.FAILED
 
         context = {
             "id": port,
@@ -280,8 +273,6 @@ def get_all_services() -> list[IPTVProxyResponse]:
     """
     services = []
 
-    current_ip = get_internal_ip_address()
-
     files = glob.glob(os.path.join(SERVICE_DIR, "iptv-proxy-*.service"))
 
     for service_file in files:
@@ -292,7 +283,7 @@ def get_all_services() -> list[IPTVProxyResponse]:
 
         port = int(match.group(1))
 
-        data = _get_service_data(port, current_ip)
+        data = _get_service_data(port)
 
         if data:
             services.append(data)
