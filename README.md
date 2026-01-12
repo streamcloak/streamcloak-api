@@ -1,5 +1,10 @@
 # StreamCloak API
 
+**License:** This project is licensed under **CC BY-NC-SA 4.0**.
+
+- ✅ **Free for personal/private use:** You can build this yourself at home.
+- ❌ **Commercial use strictly prohibited:** You may not sell devices running this software or use it for business purposes without explicit permission.
+
 ## Overview
 This repository contains the FastAPI backend service for the StreamCloak VPN Box.
 It acts as the central control endpoint, serving as the bridge between the user interface (Mobile/Web App) and the underlying Linux operating system.
