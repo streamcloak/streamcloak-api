@@ -1,3 +1,4 @@
+import fcntl
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -17,22 +18,42 @@ setup_logging()
 settings = get_settings()
 scheduler = AsyncIOScheduler()
 
+LOCK_FILE = "/tmp/streamcloak_scheduler.lock"
+
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     from app.core.logger import logger
 
-    logger.info("🚀  StreamCloak VPN Box API is starting up...")
-    import asyncio
+    # Process-wide lock
+    lock_file = open(LOCK_FILE, "w")
+    try:
+        # Try to get an exclusive lock (non-blocking)
+        fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
 
-    asyncio.create_task(update_vpn_servers())
-    asyncio.create_task(update_gravity())
+        logger.info("🚀  StreamCloak VPN Box API is starting up...")
+        import asyncio
 
-    scheduler.add_job(update_vpn_servers, trigger=IntervalTrigger(weeks=1), id="update_vpn_list", replace_existing=True)
-    scheduler.add_job(update_gravity, trigger=IntervalTrigger(weeks=1), id="update_gravity", replace_existing=True)
-    scheduler.start()
+        asyncio.create_task(update_vpn_servers())
+        asyncio.create_task(update_gravity())
+
+        scheduler.add_job(
+            update_vpn_servers, trigger=IntervalTrigger(weeks=1), id="update_vpn_list", replace_existing=True
+        )
+        scheduler.add_job(update_gravity, trigger=IntervalTrigger(weeks=1), id="update_gravity", replace_existing=True)
+        scheduler.start()
+
+    except BlockingIOError:
+        logger.info("⚡ Worker skipping scheduler (already running in another process)")
 
     yield
+
+    # Cleanup
+    try:
+        scheduler.shutdown()
+        lock_file.close()
+    except:
+        pass
     logger.info("🛑  StreamCloak VPN Box API is shutting down...")
 
 
