@@ -117,7 +117,7 @@ def _write_service_files(port: int, data: IPTVProxyCreate) -> str:
     script_path = os.path.join(SCRIPT_DIR, script_name)
     service_path = os.path.join(SERVICE_DIR, service_name)
 
-    base_cmd = ["/usr/bin/iptv-proxy"]
+    base_cmd = ["/usr/local/bin/iptv-proxy"]
     cmd_args_list = []
 
     if data.xtream_user and data.xtream_password and data.xtream_base_url:
