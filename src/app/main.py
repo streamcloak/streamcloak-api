@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.triggers.interval import IntervalTrigger
+from apscheduler.triggers.cron import CronTrigger
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
@@ -38,9 +38,17 @@ async def lifespan(_app: FastAPI):
         asyncio.create_task(update_gravity())
 
         scheduler.add_job(
-            update_vpn_servers, trigger=IntervalTrigger(weeks=1), id="update_vpn_list", replace_existing=True
+            update_vpn_servers,
+            trigger=CronTrigger(day_of_week="tue", hour=3, minute=0),
+            id="update_vpn_list",
+            replace_existing=True,
         )
-        scheduler.add_job(update_gravity, trigger=IntervalTrigger(weeks=1), id="update_gravity", replace_existing=True)
+        scheduler.add_job(
+            update_gravity,
+            trigger=CronTrigger(day_of_week="tue", hour=3, minute=30),
+            id="update_gravity",
+            replace_existing=True,
+        )
         scheduler.start()
 
     except BlockingIOError:
