@@ -15,6 +15,7 @@ from app.iptv.schemas import IPTVProxyCreate, IPTVProxyResponse, ServiceOperatio
 SERVICE_DIR = "/etc/systemd/system"
 SCRIPT_DIR = "/usr/local/bin"
 PORT_RANGE = range(9000, 9999 + 1)
+M3U_CACHE_EXPIRATION = 6  # in hours - CAUTION: Do not change unless you also change /usr/bin/local/cleanup_iptv_tmp.sh
 
 
 def _get_next_free_port() -> int:
@@ -136,6 +137,7 @@ def _write_service_files(port: int, data: IPTVProxyCreate) -> str:
         cmd_args_list.append(("--xtream-base-url", data.xtream_base_url))
         cmd_args_list.append(("--user", data.user))
         cmd_args_list.append(("--password", data.password))
+        cmd_args_list.append(("--m3u-cache-expiration", M3U_CACHE_EXPIRATION))
     else:
         # Default
         if not data.m3u_url:
@@ -146,6 +148,7 @@ def _write_service_files(port: int, data: IPTVProxyCreate) -> str:
         cmd_args_list.append(("--hostname", data.hostname))
         cmd_args_list.append(("--user", data.user))
         cmd_args_list.append(("--password", data.password))
+        cmd_args_list.append(("--m3u-cache-expiration", M3U_CACHE_EXPIRATION))
 
     for flag, value in cmd_args_list:
         # shlex.quote() ensures security and correct quotation marks.
