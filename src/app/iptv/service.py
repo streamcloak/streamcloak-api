@@ -230,13 +230,13 @@ def _get_service_data(port: int) -> IPTVProxyResponse | None:
         is_active = False
         is_enabled = False
         try:
-            run_command(["systemctl", "is-active", "--quiet", service_name], check=True)
+            subprocess.run(["systemctl", "is-active", "--quiet", service_name], check=True)
             is_active = True
         except subprocess.CalledProcessError:
             pass
 
         try:
-            run_command(["systemctl", "is-enabled", "--quiet", service_name], check=True)
+            subprocess.run(["systemctl", "is-enabled", "--quiet", service_name], check=True)
             is_enabled = True
         except subprocess.CalledProcessError:
             pass
